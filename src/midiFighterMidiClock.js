@@ -21,7 +21,7 @@ async function accessMidi() {
     .fromEvent("statechange", access)
     .filter(({port}) => port.state === "connected")
     .map(({port}) => port)
-// 
+
     const alreadyConnectedMidiInputDevices$ = most.from(access.inputs.values())
     const alreadyConnectedMidiOutputDevices$ = most.from(access.outputs.values())
 
@@ -36,7 +36,6 @@ async function accessMidi() {
             .filter(({name}) => name === "IAC Driver IAC Bus 2")
             .filter(d => d instanceof MIDIInput)
             .map(d => most.fromEvent("midimessage",d)))
-
             .map(({data}) => data)
             .tap(log("midi"))  
             .multicast()
@@ -50,17 +49,15 @@ async function accessMidi() {
     const twisterOutputDevice$ = midiDevices$
         .filter(({name}) => name === "Midi Fighter Twister")
         .filter(d => d instanceof MIDIOutput)
-        // .observe(log("twisterOutputDevice"));
-// .drain()
+
 
 
     midiToTwister$
-    // .observe(log("midiToTwister"))
     .combine((midi,twister) =>  twister.send(midi), twisterOutputDevice$)
     .drain();
 
 
 
 }
-
+    
 accessMidi()
